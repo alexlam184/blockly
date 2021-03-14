@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "turnned-e-blockly",
+			"path": "../../.."
+		},
+		{
+			"name": "flowchart",
+			"path": "../../../../old/flowchart"
+		}
+	],
+	"settings": {}
+}

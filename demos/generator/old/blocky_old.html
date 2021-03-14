@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<link rel="icon" href="icon.png" sizes="16x16" type="image/png">
+<head>
+  <meta charset="utf-8">
+  <title>TEE.AI</title>
+
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+  <!-- Custom styles for this template-->
+  <link href="css/sb-admin-2.min.css" rel="stylesheet">
+
+  <script src="../../blockly_compressed.js"></script>
+  <script src="../../blocks_compressed.js"></script>
+  <script src="../../javascript_compressed.js"></script>
+  <script src="../../msg/js/en.js"></script>
+  <script src="http://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>
+  <script src="src/jquery.csv.js"></script>
+  <!-- Import TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.0/dist/tf.min.js"></script>
+  <!-- Import tfjs-vis -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.0.2/dist/tfjs-vis.umd.min.js"></script>
+  <!-- Import dataframe.js -->
+  <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.js"></script>
+  <script src="https://bogdan-lyashenko.github.io/js-code-to-svg-flowchart/dist/js2flowchart.js"></script>
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+  </style>
+</head>
+<body id="">
+
+<div style="width: 100%">
+
+	  <h1> Generating AI JavaScript</h1>
+
+	  <p>TEE.AI demo of generating AI code from blocks.</p>
+
+	
+	  <p>
+		<button onclick="showCode()">Show JavaScript</button>
+		<button onclick="runSetup()">Run Setup</button>
+		<button onclick="runCode()">Run JavaScript</button>
+	  </p>
+	  <div>
+		  Flowchart
+		<p id="svgImage"></p>
+	  </div>
+
+	  <div id="blocklyDiv" style="display: inline-block; height: 480px; width: 58%;">
+
+	  <xml id="toolbox" style="display: none">
+		<category name="Logic">
+		  <block type="controls_if"></block>
+		  <block type="logic_compare"></block>
+		  <block type="logic_operation"></block>
+		  <block type="logic_negate"></block>
+		  <block type="logic_boolean"></block>
+		</category>
+		<category name="Loops">
+		  <block type="controls_repeat_ext">
+			<value name="TIMES">
+			  <block type="math_number">
+				<field name="NUM">10</field>
+			  </block>
+			</value>
+		  </block>
+		  <block type="controls_whileUntil"></block>
+		</category>
+		<category name="Math">
+		  <block type="math_number"></block>
+		  <block type="math_arithmetic"></block>
+		  <block type="math_single"></block>
+		</category>
+		<category name="Text">
+		  <block type="text"></block>
+		  <block type="text_length"></block>
+		  <block type="text_print"></block>
+		  <block type="print_textarea"></block>
+		  <block type="clear_textarea"></block>
+		  <block type="print_to_console"></block>
+		  
+		</category>
+		<category name="Lists">
+		  <block type="lists_create_empty"></block>
+		  <block type="lists_create_with"></block>
+		  <block type="lists_repeat">
+			<value name="NUM">
+			  <block type="math_number">
+				<field name="NUM">5</field>
+			  </block>
+			</value>
+		  </block>
+		  <block type="lists_length"></block>
+		  <block type="lists_isEmpty"></block>
+		  <block type="lists_indexOf"></block>
+		  <block type="lists_getIndex"></block>
+		  <block type="lists_setIndex"></block>
+		  <block type="array_push"></block>
+		  <block type="object_getkey"></block>
+		  <block type="object_getvalue"></block>
+		  <block type="str_to_intarray"></block>
+		  <block type="get_classes"></block>
+		  <block type="get_label"></block>
+		  <block type="get_onehotcode"></block>
+		  
+    </category>
+		<category name="Variables" custom="VARIABLE"></category>
+		<category name="Functions" custom="PROCEDURE"></category>
+		<category name="AI">
+		
+		<block type="preset_model">
+			<value name="feature">
+				<block type="math_number">
+					<field name="NUM">10</field>
+				</block>
+			</value>
+		</block>
+		
+		<block type="sequential">
+		</block>
+		<block type="conv1d"></block>
+		<block type="dense">
+			<value name="dense">
+				<block type="math_number">
+					<field name="NUM">10</field>
+				</block>
+			</value>
+		</block>
+		<block type="drop">
+			<value name="rate">
+				<block type="math_number">
+					<field name="NUM">0.4</field>
+				</block>
+			</value>
+		</block>
+		<block type="flatten"></block>
+		<block type="complie"></block>
+		<block type="summary"></block>
+		<block type="fit_vsplit"></block>
+		<block type="to_tensor"></block>
+		<block type="reshape_tensor"></block>
+		<block type="predict"></block>
+		<block type="save_model"></block>
+		
+		</category>
+		<category name="File I/O">
+		<block type="file_input"></block>
+		<block type ="get_textdata"></block>
+		<block type="get_objdatalist"></block>
+		<block type="col_to_intarray"></block>
+		</category>
+	  </xml>
+	  
+	  
+	  <script src="https://unpkg.com/blockly"></script>
+	  <script src="scripts/AI.js"></script>
+	  <script src="scripts/fileio.js"></script>
+	  <script src="scripts/textarea.js"></script>
+	  <script src="scripts/array.js"></script>
+	  
+	  
+	  
+	  <xml id="startBlocks" style="display: none">
+		<block type="controls_if" inline="false" x="20" y="20">
+		  <mutation else="1"></mutation>
+		  <value name="IF0">
+			<block type="logic_compare" inline="true">
+			  <field name="OP">EQ</field>
+			  <value name="A">
+				<block type="math_arithmetic" inline="true">
+				  <field name="OP">MULTIPLY</field>
+				  <value name="A">
+					<block type="math_number">
+					  <field name="NUM">6</field>
+					</block>
+				  </value>
+				  <value name="B">
+					<block type="math_number">
+					  <field name="NUM">7</field>
+					</block>
+				  </value>
+				</block>
+			  </value>
+			  <value name="B">
+				<block type="math_number">
+				  <field name="NUM">42</field>
+				</block>
+			  </value>
+			</block>
+		  </value>
+		  <statement name="DO0">
+			<block type="text_print" inline="false">
+			  <value name="TEXT">
+				<block type="text">
+				  <field name="TEXT">Don't panic</field>
+				</block>
+			  </value>
+			</block>
+		  </statement>
+		  <statement name="ELSE">
+			<block type="text_print" inline="false">
+			  <value name="TEXT">
+				<block type="text">
+				  <field name="TEXT">Panic</field>
+				</block>
+			  </value>
+			</block>
+		  </statement>
+		</block>
+	  </xml>
+
+	  </div>
+	 <div id="outputDiv" style="display: inline-block; height: 480px; width: 38%;"> 
+	   <p id= "fileio">file io</p>
+
+  <textarea id="output" disabled="disabled" style="display: inline-block; height: 480px; width: 100%;">    </textarea>
+	  
+	  
+	</div>
+	
+	
+ 
+
+	</div>
+  
+  <script>
+    
+	
+	// global var
+	var textdata = "";
+    var jsondata ;
+	var model_summary
+	var DataFrame = dfjs.DataFrame;
+	
+	const {convertCodeToFlowTree, convertFlowTreeToSvg} = window.js2flowchart;
+    var workspace = Blockly.inject('blocklyDiv',
+        {media: '../../media/',
+         toolbox: document.getElementById('toolbox')});
+    Blockly.Xml.domToWorkspace(workspace,
+        document.getElementById('startBlocks'));
+
+    function showCode() {
+      // Generate JavaScript code and display it.
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      alert(code);
+	  console.log(code);	
+
+	  const {createFlowTreeBuilder, createSVGRender} = js2flowchart;
+
+const flowTreeBuilder = createFlowTreeBuilder(),
+svgRender = createSVGRender();
+
+const flowTree = flowTreeBuilder.build(code),
+shapesTree = svgRender.buildShapesTree(flowTree);
+
+const svg = shapesTree.print();
+
+document.getElementById('svgImage').innerHTML = svg;
+	  
+	  document.getElementById('output').value = code.slice(0,code.indexOf("setup();")+8) +"\n====== End of Setup =====\n\n";
+    }
+
+	function runSetup (){
+		// run the setup part only
+	  window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code.slice(0,code.indexOf("setup();")+8));
+		document.getElementById('output').value += "===== Setup completed =====\n\n" ;
+      } catch (e) {
+        alert(e);
+      }
+	}
+	
+	
+	
+    function runCode() {
+      // Generate JavaScript code and run it.
+      window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code);
+      } catch (e) {
+        alert(e);
+      }
+    }
+	
+	
+	var openFile = function(event) {
+		var input = event.target;
+
+		var reader = new FileReader();
+		reader.onload = function(){
+		  textdata = reader.result;
+		  jsondata = $.csv.toObjects(reader.result);
+		  console.log(jsondata);
+		  console.log(Object.values(jsondata[0]));  // object
+		  console.log(Object.values(jsondata[0])[1]);; // object values
+		  document.getElementById('output').value += JSON.stringify(Object.keys(jsondata[0])); //keys
+
+		
+		  //document.getElementById('output').value = textdata;  // need better way to display the data
+		  
+		};
+		reader.readAsText(input.files[0]);
+	};
+	
+  </script>
+
+</body>
+</html>

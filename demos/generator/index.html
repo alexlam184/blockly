@@ -1,12 +1,30 @@
 <!DOCTYPE html>
 <html>
+<link rel="icon" href="icon.png" sizes="16x16" type="image/png">
 <head>
-  <meta charset="utf-8">
-  <title>Blockly Demo: Generating JavaScript</title>
-  <script src="../../blockly_compressed.js"></script>
-  <script src="../../blocks_compressed.js"></script>
-  <script src="../../javascript_compressed.js"></script>
-  <script src="../../msg/js/en.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEE.AI</title>
+  
+    
+  <script src="src/blocks_compressed.js"></script>
+  <script src="src/javascript_compressed.js"></script>
+  <script src="src/en.js"></script>
+  
+   <!-- Import ble and serial -->
+  <script src="src/p5ble.js"></script>
+  <script src="src/app.js"></script>
+
+  
+  <script src="http://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>
+  <script src="src/jquery.csv.js"></script>
+  <!-- Import TensorFlow.js -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+  <!-- Import tfjs-vis -->
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis@1.0.2/dist/tfjs-vis.umd.min.js"></script>
+  <!-- Import dataframe.js -->
+  <script src="https://gmousse.github.io/dataframe-js/dist/dataframe.js"></script>
+
   <style>
     body {
       background-color: #fff;
@@ -16,133 +34,390 @@
       font-weight: normal;
       font-size: 140%;
     }
+
   </style>
+  <!-- PLEASE NO CHANGES BELOW THIS LINE (UNTIL I SAY SO) -->
+  <script language="javascript" type="text/javascript" src="libraries/p5.min.js"></script>
+  <script language="javascript" type="text/javascript" src="libraries/p5.serialport.js"></script>
+  <script language="javascript" type="text/javascript" src="libraries/p5.clickable.js"></script>
+  <script language="javascript" type="text/javascript" src="application.js"></script>
+  <!-- OK, YOU CAN MAKE CHANGES BELOW THIS LINE AGAIN -->
+
+
 </head>
+
 <body>
-  <h1><a href="https://developers.google.com/blockly/">Blockly</a> &gt;
-    <a href="../index.html">Demos</a> &gt; Generating JavaScript</h1>
 
-  <p>This is a simple demo of generating code from blocks and running
-  the code in a sandboxed JavaScript interpreter.</p>
 
-  <p>&rarr; More info on <a href="https://developers.google.com/blockly/guides/configure/web/code-generators">Code Generators</a> and <a href="https://developers.google.com/blockly/guides/app-integration/running-javascript">Running JavaScript</a>.</p>
+<div style="width: 100%">
 
-  <p>
+    <h1> Generating AI JavaScript</h1>
+
+    <p>TEE.AI demo of generating AI code from blocks.</p>
+
+  
+    <p>
     <button onclick="showCode()">Show JavaScript</button>
+    <button onclick="runSetup()">Run Setup</button>
     <button onclick="runCode()">Run JavaScript</button>
-  </p>
+    <button onclick="saveWorkspace()">Save workspace</button>
+    <button onclick="loadWorkspace()">Load workspace</button>
+    <button onclick="tfvis.visor().toggle()">visor on/off</button>
+    <button onclick="wifion()">Wifi</button>
+    <button onclick="wifioff()">Wifi</button>
+    </p>
 
-  <div id="blocklyDiv" style="height: 480px; width: 600px;"></div>
+    <div id="blocklyDiv" style="display: inline-block; height: 480px; width: 58%;">
 
-  <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
-    <category name="Logic" colour="%{BKY_LOGIC_HUE}">
+    <xml id="toolbox" style="display: none">
+    <category name="Logic">
       <block type="controls_if"></block>
       <block type="logic_compare"></block>
       <block type="logic_operation"></block>
       <block type="logic_negate"></block>
       <block type="logic_boolean"></block>
     </category>
-    <category name="Loops" colour="%{BKY_LOOPS_HUE}">
+    <category name="Loops">
       <block type="controls_repeat_ext">
-        <value name="TIMES">
-          <block type="math_number">
-            <field name="NUM">10</field>
-          </block>
-        </value>
+      <value name="TIMES">
+        <block type="math_number">
+        <field name="NUM">10</field>
+        </block>
+      </value>
       </block>
       <block type="controls_whileUntil"></block>
     </category>
-    <category name="Math" colour="%{BKY_MATH_HUE}">
-      <block type="math_number">
-        <field name="NUM">123</field>
-      </block>
+    <category name="Math">
+      <block type="math_number"></block>
       <block type="math_arithmetic"></block>
       <block type="math_single"></block>
+      <block type="get_statistic"></block>
+      <block type="get_standard_score"></block>
     </category>
-    <category name="Text" colour="%{BKY_TEXTS_HUE}">
+    <category name="Text">
       <block type="text"></block>
       <block type="text_length"></block>
       <block type="text_print"></block>
+      <block type="print_textarea"></block>
+      <block type="clear_textarea"></block>
+      <block type="print_to_console"></block>
+      
     </category>
-  </xml>
-
-  <xml xmlns="https://developers.google.com/blockly/xml" id="startBlocks" style="display: none">
+    <category name="Lists">
+      <block type="lists_create_empty"></block>
+      <block type="lists_create_with"></block>
+      <block type="lists_repeat">
+      <value name="NUM">
+        <block type="math_number">
+        <field name="NUM">5</field>
+        </block>
+      </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf"></block>
+      <block type="lists_getIndex"></block>
+      <block type="lists_setIndex"></block>
+      <block type="array_push"></block>
+      <block type="object_getkey"></block>
+      <block type="object_getvalue"></block>
+      <block type="str_to_intarray"></block>
+      <block type="get_classes"></block>
+      <block type="get_label"></block>
+      <block type="get_onehotcode"></block>
+      <block type="max_pos_index"></block>
+      
+    </category>
+    <category name="Variables" custom="VARIABLE">
+	</category>
+    <category name="Functions" custom="PROCEDURE"></category>
+    <category name="AI">
+	
+    <block type="preset_model">
+      <value name="feature">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </value>
+    </block>
+    
+    <block type="sequential">
+    </block>
+    <block type="conv1d"></block>
+    <block type="dense">
+      <value name="dense">
+        <block type="math_number">
+          <field name="NUM">10</field>
+        </block>
+      </value>
+    </block>
+    <block type="drop">
+      <value name="rate">
+        <block type="math_number">
+          <field name="NUM">0.4</field>
+        </block>
+      </value>
+    </block>
+    <block type="flatten"></block>
+    <block type="complie"></block>
+    <block type="summary"></block>
+    <block type="fit_vsplit"></block>
+    <block type="to_tensor"></block>
+    <block type="reshape_tensor"></block>
+    <block type="predict"></block>
+    <block type="save_model"></block>
+    <block type="evaluate"></block>
+    <block type="tensorToArray"></block>
+    <block type="max_pos_index_list"></block>
+    <block type="save_model_local"></block>
+    
+	<block type="set_mean"></block>
+	<block type="set_sd"></block>
+	
+    </category>
+    <category name="File I/O">
+    <block type="file_input"></block>
+    <block type ="get_textdata"></block>
+    <block type="get_objdatalist"></block>
+    <block type="col_to_intarray"></block>
+    </category>
+    <category name="Wifi">
+    <block type="http_request"></block>
+    </category>
+    </xml>
+    
+    
+    <script src="https://unpkg.com/blockly"></script>
+    <script src="scripts/AI.js"></script>
+    <script src="scripts/fileio.js"></script>
+    <script src="scripts/textarea.js"></script>
+    <script src="scripts/array.js"></script>
+    <script src="scripts/extend_math.js"></script>
+    <script src="scripts/wifi.js"></script>
+    
+    
+    
+    <xml id="startBlocks" style="display: none">
     <block type="controls_if" inline="false" x="20" y="20">
       <mutation else="1"></mutation>
       <value name="IF0">
-        <block type="logic_compare" inline="true">
-          <field name="OP">EQ</field>
+      <block type="logic_compare" inline="true">
+        <field name="OP">EQ</field>
+        <value name="A">
+        <block type="math_arithmetic" inline="true">
+          <field name="OP">MULTIPLY</field>
           <value name="A">
-            <block type="math_arithmetic" inline="true">
-              <field name="OP">MULTIPLY</field>
-              <value name="A">
-                <block type="math_number">
-                  <field name="NUM">6</field>
-                </block>
-              </value>
-              <value name="B">
-                <block type="math_number">
-                  <field name="NUM">7</field>
-                </block>
-              </value>
-            </block>
+          <block type="math_number">
+            <field name="NUM">6</field>
+          </block>
           </value>
           <value name="B">
-            <block type="math_number">
-              <field name="NUM">42</field>
-            </block>
+          <block type="math_number">
+            <field name="NUM">7</field>
+          </block>
           </value>
         </block>
+        </value>
+        <value name="B">
+        <block type="math_number">
+          <field name="NUM">42</field>
+        </block>
+        </value>
+      </block>
       </value>
       <statement name="DO0">
-        <block type="text_print" inline="false">
-          <value name="TEXT">
-            <block type="text">
-              <field name="TEXT">Don't panic</field>
-            </block>
-          </value>
+      <block type="text_print" inline="false">
+        <value name="TEXT">
+        <block type="text">
+          <field name="TEXT">Don't panic</field>
         </block>
+        </value>
+      </block>
       </statement>
       <statement name="ELSE">
-        <block type="text_print" inline="false">
-          <value name="TEXT">
-            <block type="text">
-              <field name="TEXT">Panic</field>
-            </block>
-          </value>
+      <block type="text_print" inline="false">
+        <value name="TEXT">
+        <block type="text">
+          <field name="TEXT">Panic</field>
         </block>
+        </value>
+      </block>
       </statement>
     </block>
-  </xml>
+    </xml>
 
+    </div>
+   <div id="outputDiv" style="display: inline-block; height: 480px; width: 38%;"> 
+     <p id= "fileio">file io</p>
+
+  <textarea id="output" disabled="disabled" style="display: inline-block; height: 480px; width: 100%;">    </textarea>
+    
+    
+  </div>
+  
+  
+ 
+
+  </div>
+  </div>
+  
+   
+
+  
   <script>
-    var demoWorkspace = Blockly.inject('blocklyDiv',
+    
+  
+  // global var
+  var textdata = "";
+  var jsondata ;
+  var model_summary
+  var DataFrame = dfjs.DataFrame;
+  var model_history
+  var model;
+  var temp_data_test = "";
+  var model_mean;
+  var model_sd;
+  
+  
+  	
+  
+    var workspace = Blockly.inject('blocklyDiv',
         {media: '../../media/',
-         toolbox: document.getElementById('toolbox')});
-    Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
-                               demoWorkspace);
+         toolbox: document.getElementById('toolbox'),
+		 renderer : "zelos"
+		 });
+    Blockly.Xml.domToWorkspace(workspace,
+        document.getElementById('startBlocks'));
+	workspace.setTheme(Blockly.Themes.Zelos);
 
     function showCode() {
       // Generate JavaScript code and display it.
       Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
-      var code = Blockly.JavaScript.workspaceToCode(demoWorkspace);
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
       alert(code);
+    console.log(code);    
+    document.getElementById('fileio').innerHTML ="";
+    document.getElementById('output').value = code.slice(0,code.indexOf("setup();")+8) +"\n====== End of Setup =====\n\n";
     }
 
+  function runSetup (){
+    // run the setup part only
+    window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+      document.getElementById('fileio').innerHTML ="";
+        eval(code.slice(0,code.indexOf("setup();")+8));
+    document.getElementById('output').value += "===== Setup completed =====\n\n" ;
+      } catch (e) {
+        alert(e);
+      }
+  }
+  
+  
+  
     function runCode() {
       // Generate JavaScript code and run it.
       window.LoopTrap = 1000;
       Blockly.JavaScript.INFINITE_LOOP_TRAP =
           'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
-      var code = Blockly.JavaScript.workspaceToCode(demoWorkspace);
+      var code = Blockly.JavaScript.workspaceToCode(workspace);
       Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
       try {
+      document.getElementById('fileio').innerHTML ="";
         eval(code);
       } catch (e) {
         alert(e);
       }
     }
+  
+  
+  var openFile = function(event) {
+    var input = event.target;
+
+    var reader = new FileReader();
+    reader.onload = function(){
+      textdata = reader.result;
+      jsondata = $.csv.toObjects(reader.result);
+      console.log(jsondata);
+      console.log(Object.values(jsondata[0]));  // object
+      console.log(Object.values(jsondata[0])[1]);; // object values
+      document.getElementById('output').value += JSON.stringify(Object.keys(jsondata[0])); //keys
+
+    
+      //document.getElementById('output').value = textdata;  // need better way to display the data
+      
+    };
+    reader.readAsText(input.files[0]);
+  };
+  
+  function saveWorkspace() {
+    var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+    var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+    
+    localStorage.setItem("blockly.xml", xmlText);
+  }
+
+  function loadWorkspace() {
+    var xmlText = localStorage.getItem("blockly.xml");
+    if (xmlText) {
+      Blockly.mainWorkspace.clear();
+      xmlDom = Blockly.Xml.textToDom(xmlText);
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xmlDom);
+    }
+  }
+    
+  function wifion(){
+  window.open("http://192.168.21.231/gpio/0");
+  }
+  function wifioff(){
+  window.open("http://192.168.21.231/gpio/1");
+  }
+  
+  
+ async function getSerialMessage() {
+      buffer = await serialLEDController.read()
+      SplittedBuffer = buffer.split("\n");
+      for (i = 0; i < SplittedBuffer.length; i++){
+        temp = SplittedBuffer[i].split(",");
+        if(temp.length != 8){
+          console.log("invalid pkt \n");
+          continue;
+        }
+        let error = false;
+        for (var x = temp.length - 1; x >= 0; x--) {
+            let valid = parseInt(temp[x]);
+            if (valid > 5000 || valid < 0 ||temp[x]=="") {
+              error = true;
+			  break;
+            }
+          }
+        if(error) continue;
+        //if content hv no error
+		//serialMessagesContainer.innerText += temp;
+	    //console.log(temp)	
+		streamAdd(temp);
+		
+      }
+	  return; 
+    }
+
+	
+	function streamAdd(data){
+	if(streamDataset.length<500){
+	streamDataset.push(data);
+	}
+	if (streamDataset.length ==500){
+	console.log(streamDataset);
+	streamDataset = [];
+	}
+	}
+  
+  
   </script>
+
 
 </body>
 </html>
